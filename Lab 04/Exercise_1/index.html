@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 1</title>
+</head>
+<body class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex flex-col items-center mt-10">
+    <div class="bg-white w-[50rem] h-[26rem] rounded-2xl">
+        <p class="flex justify-center font-bold text-2xl mt-2">QUẢN LÝ SINH VIÊN</p>
+        <form id="info-input" class="ml-4 mr-4">
+            <label for="hoTen" class="font-bold">Họ tên:</label>
+            <br><input type="text" id="hoTen" class="border-y rounded mt-2 mb-5 w-full focus:outline-blue-300">
+            <br><label for="maSV" class="font-bold">Mã SV:</label>
+            <br><input type="text" id="maSV" class="border-y rounded mt-2 mb-5 w-full focus:outline-blue-300">
+            <br><label for="ngaySinh" class="font-bold">Ngày sinh:</label>
+            <br><input type="date" id="ngaySinh" class="border-y rounded mt-2 mb-5 w-full focus:outline-blue-300">
+            <br><label for="lop" class="font-bold">Lớp:</label>
+            <br><input type="text" id="lop" class="border-y rounded mt-2 mb-5 w-full focus:outline-blue-300">
+        </form>
+        <button id="btnThem" type="submit" class="ml-4 bg-blue-500 hover:bg-blue-700 px-4 py-2 text-white font-bold rounded">Thêm</button>
+    </div>
+    <script src="Tailwind/tailwind.js"></script>
+
+    <div class="bg-white w-[100rem] h-auto rounded-2xl mt-10">
+        <h2 class="text-2xl font-bold my-4 ml-4">Danh sách sinh viên</h2>
+
+        <table id="listStudent" class="table-auto w-full">
+            <thead>
+            <tr>
+                <th class="border-t border-r px-4 py-2">Họ tên</th>
+                <th class="border-t border-r px-4 py-2">Mã SV</th>
+                <th class="border-t border-r px-4 py-2">Ngày sinh</th>
+                <th class="border-t border-r px-4 py-2">Lớp</th>
+                <th class="border-t px-4 py-2">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>    
+    </div>
+
+    <script>
+    // JavaScript (bạn sẽ viết các hàm xử lý sự kiện tại đây)
+    document.getElementById("btnThem").addEventListener("click", function(event) {
+        event.preventDefault(); // Ngăn chặn form submit mặc định
+
+        // Lấy dữ liệu từ form
+        const hoTen = document.getElementById('hoTen').value;
+        const maSV = document.getElementById('maSV').value;
+        const ngaySinh = document.getElementById('ngaySinh').value;
+        const lop = document.getElementById('lop').value;
+
+        document.getElementById('hoTen').value = '';
+        document.getElementById('maSV').value = '';
+        document.getElementById('ngaySinh').value = '';
+        document.getElementById('lop').value = '';
+
+        // Validate dữ liệu
+        if (!hoTen || !maSV || !ngaySinh || !lop) {
+            alert("Vui lòng nhập đầy đủ thông tin");
+            return;
+        }
+
+        // Thêm sinh viên vào bảng và localStorage
+        // Lấy danh sách sinh viên từ localStorage hoặc tạo mới nếu chưa có
+        let danhSachSinhVien = getDanhSachSinhVien();
+
+        // Thêm sinh viên mới vào danh sách
+        danhSachSinhVien.push({ hoTen, maSV, ngaySinh, lop });
+
+        // Lưu danh sách sinh viên vào localStorage
+        localStorage.setItem('danhSachSinhVien', JSON.stringify(danhSachSinhVien));
+
+        hienThiDanhSachSinhVien();
+    });
+
+    function getDanhSachSinhVien() {
+        // Lấy danh sách sinh viên từ localStorage hoặc tạo mới nếu chưa có
+        return JSON.parse(localStorage.getItem('danhSachSinhVien')) || [];
+    }
+
+    // Hàm hiển thị danh sách sinh viên từ localStorage khi trang tải
+    function hienThiDanhSachSinhVien() {
+        const listStudentBody = document.querySelector('#listStudent tbody');
+        listStudentBody.innerHTML = ''; // Xóa nội dung cũ
+
+        // Lấy danh sách sinh viên từ localStorage
+        const danhSachSinhVien = getDanhSachSinhVien();
+
+        // Tạo hàng cho từng sinh viên
+        danhSachSinhVien.forEach((sinhVien, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="border-t border-r px-4 py-2">${sinhVien.hoTen}</td>
+                <td class="border-t border-r px-4 py-2">${sinhVien.maSV}</td>
+                <td class="border-t border-r px-4 py-2">${sinhVien.ngaySinh}</td>
+                <td class="border-t border-r px-4 py-2">${sinhVien.lop}</td>
+                <td class="border-t px-4 py-2"><button class="bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded" onclick="xoaSinhVien(${index})">Xóa</button></td>
+            `;
+            listStudentBody.appendChild(row);
+        });
+    }
+
+    // Hàm xóa sinh viên
+    function xoaSinhVien(index) {
+        let option = confirm('Bạn có muốn xóa sinh viên này không?');
+        if (!option) {
+            return;
+        } else {
+            let danhSachSinhVien = getDanhSachSinhVien();
+            danhSachSinhVien.splice(index, 1); // Xóa sinh viên theo index
+            localStorage.setItem('danhSachSinhVien', JSON.stringify(danhSachSinhVien)); // Cập nhật lại localStorage
+            hienThiDanhSachSinhVien(); // Hiển thị lại danh sách
+        }
+    }
+
+    // Gọi hàm hiển thị danh sách khi trang tải
+    hienThiDanhSachSinhVien();
+    </script>
+</body>
+</html>
