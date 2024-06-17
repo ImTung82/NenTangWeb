@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'New Font';
+    src: url(./font/News_Cycle/NewsCycle-Regular.ttf);
+}
+
+nav {
+    background-color: blue;
+    padding: 15px;
+}
+
+nav button {
+    font-family: 'New Font';
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: white;
+    background-color: blue;
+    border: none;
+    border-left: 1px solid white;
+    padding: 0 10px;
+}
